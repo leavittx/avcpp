@@ -179,9 +179,20 @@ protected:
 #if AV_GCC_VERSION_AT_LEAST(3,1)
 #    define attribute_deprecated2(x) __attribute__((deprecated(x)))
 #elif defined(_MSC_VER)
-#    define attribute_deprecated2(x) __declspec(deprecated(x))
+#    define attribute_deprecated2(x) //__declspec(deprecated(x))
 #else
 #    define attribute_deprecated2(x)
+#endif
+
+// ssize_t on windows
+#if defined(_MSC_VER)
+#   include <BaseTsd.h>
+    typedef SSIZE_T ssize_t;
+#endif
+
+#ifdef AV_TIME_BASE_Q
+#   undef AV_TIME_BASE_Q
+#   define AV_TIME_BASE_Q          AVRational{1, AV_TIME_BASE}
 #endif
 
 
