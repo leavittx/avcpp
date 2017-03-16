@@ -396,7 +396,7 @@ public:
 
     void setWidth(int w) // Note, it also sets coded_width
     {
-        if (isValid() & !isOpened())
+        if (isValid() && !isOpened())
         {
             m_raw->width       = w;
             m_raw->coded_width = w;
