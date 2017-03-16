@@ -167,7 +167,7 @@ void FilterGraph::parse(const string &graphDescription,
 
     struct FilterInOutDeleter
     {
-        void operator()(AVFilterInOut *&ptr)
+        void operator()(AVFilterInOut *ptr)
         {
             avfilter_inout_free(&ptr);
         }
