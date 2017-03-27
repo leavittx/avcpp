@@ -20,7 +20,8 @@ foreach(target ${TARGETS})
 
    target_link_libraries(${target}
       Threads::Threads
-      FFmpeg::FFmpeg
+      #FFmpeg::FFmpeg
+      ${FFMPEG_LIBRARIES}
       avcpp
   )
 

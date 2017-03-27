@@ -89,6 +89,9 @@ int main(int argc, char **argv)
 
     Codec        ocodec  = findEncodingCodec(ofrmt);
     Stream      ost     = octx.addStream(ocodec);
+    //ost.setWidth(vst.width());
+    //ost.setHeight(vst.height());
+    //ost.setPixelFormat(vst.pixelFormat());
     VideoEncoderContext encoder {ost};
 
     // Settings

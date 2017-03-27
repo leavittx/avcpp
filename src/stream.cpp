@@ -58,14 +58,30 @@ Timestamp Stream::currentDts() const
 
 AVMediaType Stream::mediaType() const
 {
-#if LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(57,5,0)
+    // m_raw->codecpar is invalid, wtf?
+//#if LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(57,5,0)
     return RAW_GET2(isValid() && m_raw->codec, codec->codec_type, AVMEDIA_TYPE_UNKNOWN);
-#else
-    return RAW_GET2(isValid() && m_raw->codecpar, codecpar->codec_type, AVMEDIA_TYPE_UNKNOWN);
-#endif
+//#else
+//    return RAW_GET2(isValid() && m_raw->codecpar, codecpar->codec_type, AVMEDIA_TYPE_UNKNOWN);
+//#endif
 }
 
-bool Stream::isAudio() const
+    int Stream::width() const
+    {
+        return RAW_GET2(isValid(), codec->width, 0);
+    }
+
+    int Stream::height() const
+    {
+        return RAW_GET2(isValid(), codec->height, 0);
+    }
+
+    PixelFormat Stream::pixelFormat() const
+    {
+        return RAW_GET2(isValid(), codec->pix_fmt, AV_PIX_FMT_NONE);
+    }
+
+    bool Stream::isAudio() const
 {
     return (mediaType() == AVMEDIA_TYPE_AUDIO);
 }
@@ -90,7 +106,22 @@ bool Stream::isAttachment() const
     return (mediaType() == AVMEDIA_TYPE_ATTACHMENT);
 }
 
-void Stream::setTimeBase(const Rational &timeBase)
+void Stream::setWidth(int w)
+{
+    RAW_SET2(isValid(), codec->width, w);
+}
+
+void Stream::setHeight(int h)
+{
+    RAW_SET2(isValid(), codec->height, h);
+}
+
+void Stream::setPixelFormat(PixelFormat fmt)
+{
+    RAW_SET2(isValid(), codec->pix_fmt, fmt.get());
+}
+
+    void Stream::setTimeBase(const Rational &timeBase)
 {
     RAW_SET2(isValid(), time_base, timeBase.getValue());
 }

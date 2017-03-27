@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include "av.h"
 #include "dictionary.h"

@@ -6,6 +6,7 @@
 #include "ffmpeg.h"
 #include "rational.h"
 #include "timestamp.h"
+#include "pixelformat.h"
 
 namespace av
 {
@@ -40,6 +41,10 @@ public:
     Timestamp   currentDts()         const;
     AVMediaType mediaType()          const;
 
+    int width()         const;
+    int height()        const;
+    PixelFormat pixelFormat() const;
+
     bool isAudio()      const;
     bool isVideo()      const;
     bool isData()       const;
@@ -47,6 +52,10 @@ public:
     bool isAttachment() const;
 
     Direction   direction() const { return m_direction; }
+
+    void setWidth(int w);
+    void setHeight(int h);
+    void setPixelFormat(PixelFormat fmt);
 
     void setTimeBase(const Rational &timeBase);
     void setFrameRate(const Rational &frameRate);

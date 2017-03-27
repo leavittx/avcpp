@@ -31,6 +31,7 @@ make_error_pair(ssize_t status)
 namespace {
 
 #define NEW_CODEC_API (LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(57,37,100))
+//#define NEW_CODEC_API 0
 
 #if NEW_CODEC_API
 // Use avcodec_send_packet() and avcodec_receive_frame()
@@ -77,7 +78,7 @@ int encode(AVCodecContext *avctx,
     ret = avcodec_receive_packet(avctx, avpkt);
     if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
         return ret;
-    if (got_packet_ptr)
+    if (got_packet_ptr && ret != AVERROR(EAGAIN))
         *got_packet_ptr = 1;
     return 0;
 }
@@ -257,11 +258,12 @@ CodecContext2::CodecContext2(const Stream &st, const Codec &codec, Direction dir
     if (st.mediaType() != type)
         throw av::Exception(make_avcpp_error(Errors::CodecInvalidMediaType));
 
-#if !defined(FF_API_LAVF_AVCTX)
+//#if !defined(FF_API_LAVF_AVCTX)
     auto const codecId = st.raw()->codec->codec_id;
-#else
-    auto const codecId = st.raw()->codecpar->codec_id;
-#endif
+
+//#else
+//    auto const codecId = st.raw()->codecpar->codec_id;
+//#endif
 
     Codec c = codec;
     if (codec.isNull())
@@ -429,8 +431,13 @@ bool CodecContext2::isOpened() const noexcept
 
 bool CodecContext2::isValid() const noexcept
 {
+    bool valid_stream = m_stream.isValid();
+    bool null_stream = m_stream.isNull();
+    bool notnull_raw = m_raw;
+    bool notnull_raw_codec = m_raw->codec;
+
     // Check parent stream first
-    return ((m_stream.isValid() || m_stream.isNull()) && m_raw && m_raw->codec);
+    return ((valid_stream || null_stream) && notnull_raw && notnull_raw_codec);
 }
 
 void CodecContext2::copyContextFrom(const CodecContext2 &other, error_code &ec)
