@@ -116,7 +116,7 @@ VideoRescaler& VideoRescaler::operator=(VideoRescaler &&rhs)
     return *this;
 }
 
-void VideoRescaler::rescale(VideoFrame &dst, const VideoFrame &src, error_code &ec)
+void VideoRescaler::rescale(VideoFrame &dst, const VideoFrame &src, bool vertical_flip, error_code &ec)
 {
     m_srcWidth       = src.width();
     m_srcHeight      = src.height();
@@ -156,8 +156,45 @@ void VideoRescaler::rescale(VideoFrame &dst, const VideoFrame &src, error_code &
     #endif
     };
 
+    uint8_t* dstFrameData[AV_NUM_DATA_POINTERS] = {
+        outFrame->data[0],
+        outFrame->data[1],
+        outFrame->data[2],
+        outFrame->data[3]
+#if AV_NUM_DATA_POINTERS == 8
+        ,
+        outFrame->data[4],
+        outFrame->data[5],
+        outFrame->data[6],
+        outFrame->data[7]
+#endif
+    };
+
+    int dstLinesize[AV_NUM_DATA_POINTERS] = {
+        outFrame->linesize[0],
+        outFrame->linesize[1],
+        outFrame->linesize[2],
+        outFrame->linesize[3]
+#if AV_NUM_DATA_POINTERS == 8
+        ,
+        outFrame->linesize[4],
+        outFrame->linesize[5],
+        outFrame->linesize[6],
+        outFrame->linesize[7]
+#endif
+    };
+
+    if (vertical_flip)
+    {
+        for (int i = 0; i < AV_NUM_DATA_POINTERS; ++i)
+        {
+            dstFrameData[i] += outFrame->linesize[i] * outFrame->height;
+            dstLinesize[i] = -dstLinesize[i];
+        }
+    }
+
     int sts = sws_scale(m_raw, srcFrameData, inpFrame->linesize, 0, m_srcHeight,
-                         outFrame->data, outFrame->linesize);
+                         dstFrameData, dstLinesize);
     if (sts < 0) {
         throws_if(ec, sts, ffmpeg_category());
         return;
@@ -173,10 +210,10 @@ void VideoRescaler::rescale(VideoFrame &dst, const VideoFrame &src, error_code &
     dst.setComplete(true);
 }
 
-VideoFrame VideoRescaler::rescale(const VideoFrame &src, error_code &ec)
+VideoFrame VideoRescaler::rescale(const VideoFrame &src, bool vertical_flip, error_code &ec)
 {
     VideoFrame dst{m_dstPixelFormat, m_dstWidth, m_dstHeight};
-    rescale(dst, src, ec);
+    rescale(dst, src, vertical_flip, ec);
     return dst;
 }
 
