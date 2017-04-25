@@ -17,8 +17,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED yes)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads)
 
-set(FFMPEG_INCLUDEDIR ${EXT_PATH}/include/ffmpeg)
-set(FFMPEG_LIBDIR ${EXT_PATH}/lib/ffmpeg)
+set(FFMPEG_INCLUDEDIR ${EXT_INC_PATH}/ffmpeg)
+set(FFMPEG_LIBDIR ${EXT_LIB_PATH}/ffmpeg)
 find_package(FFmpeg COMPONENTS AVCODEC AVFORMAT AVUTIL AVDEVICE AVFILTER SWSCALE SWRESAMPLE REQUIRED)
 message("avcpp FFMPEG_INCLUDE_DIRS: " ${FFMPEG_INCLUDE_DIRS})
 message("avcpp FFMPEG_LIBRARIES:    " ${FFMPEG_LIBRARIES})
@@ -31,4 +31,6 @@ add_subdirectory(src)
 #add_subdirectory(example/sample-transcode)
 #add_subdirectory(example/api2-samples)
 #add_subdirectory(example/sample-view)
+
+
 
