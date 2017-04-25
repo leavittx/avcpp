@@ -6,6 +6,9 @@ set(AV_BUILD_STATIC_LIB 1)
 file(GLOB_RECURSE AV_SOURCES "*.cpp")
 file(GLOB_RECURSE AV_HEADERS "*.h" "*.hpp")
 
+### Platform-specific definitions
+include(${CMAKE_SOURCE_DIR}/cmake/Platform.cmake)
+
 set(AV_TARGET avcpp)
 
 if (AV_BUILD_SHARED_LIB)
